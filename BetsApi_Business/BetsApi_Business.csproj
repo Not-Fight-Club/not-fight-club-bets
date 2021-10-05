@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BetsApi_Data\BetsApi_Data.csproj" />
+    <ProjectReference Include="..\BetsApi_Models\BetsApi_Models.csproj" />
+  </ItemGroup>
+
+</Project>
