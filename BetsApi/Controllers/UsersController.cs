@@ -5,7 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using BetsApi_Data.Models;
+using BetsApi_Data;
+using BetsApi_Models.EFModels;
 
 namespace BetsApi
 {
