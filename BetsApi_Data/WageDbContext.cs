@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 #nullable disable
 
-namespace BetsApi.Models
+namespace BetsApi_Data.Models
 {
     public partial class WageDbContext : DbContext
     {

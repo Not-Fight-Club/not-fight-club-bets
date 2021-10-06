@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 #nullable disable
 
-namespace BetsApi.Models
+namespace BetsApi_Data.Models
 {
     public partial class Wager
     {
