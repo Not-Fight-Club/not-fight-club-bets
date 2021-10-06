@@ -1,17 +1,17 @@
 ﻿using BetsApi_Business.Interfaces;
-using BetsApi_Data.Models;
+using BetsApi_Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BetsApi_Models;
-using BetsApi_Models.EFModels;
 using BetsApi_Models.ViewModels;
+using BetsApi_Models.EFModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace BetsApi_Business.Repository {
-    class WagerRepo : IModelMapper<Wager, ViewWager>, IWagerRepo {
+    public class WagerRepo : IModelMapper<Wager, ViewWager>, IWagerRepo {
 
         private readonly WageDbContext _context;
         public WagerRepo(WageDbContext context) {
@@ -56,9 +56,18 @@ namespace BetsApi_Business.Repository {
             int totalWinningBets = await GetWinningFighterBets(curFightId, winningFighterId);
             //Get the total amount of bets placed on the loser
             int totalLosingBets = await GetLosingFighterBets(curFightId, winningFighterId);
-
-            
+            //Get the winning bets
+            List<ViewWager> winningBets = await GetWinningWages(curFightId, winningFighterId);
+            //Create a list of Users to be paid
             List<ViewUser> userToBePaid = new List<ViewUser>();
+            foreach(ViewWager curWage in winningBets) {
+                int curPayout = GetSinglePayout(totalLosingBets,curWage.Amount,totalWinningBets);
+                ViewUser curUser = new ViewUser();
+                curUser.UserId = curWage.UserId;
+                curUser.TotalCurrency = curPayout;
+                userToBePaid.Add(curUser);
+            }
+
 
             return userToBePaid;
         }
@@ -67,14 +76,36 @@ namespace BetsApi_Business.Repository {
         //Get money bet on losing fighter
         public async Task<int> GetLosingFighterBets(int curFightId, int winningFighterId) {
             int stuff = 0;
-            //Some select statement from josh
+            List<Wager> wstuff = await _context.Wagers.FromSqlRaw<Wager>("SELECT * FROM Wager WHERE FightId = {0} AND FighterId != {1}", curFightId, winningFighterId).ToListAsync();
+            foreach(Wager w in wstuff) {
+                stuff += w.Amount;
+            }
             return stuff;
         }
         //Get money bet on winning fighter
         public async Task<int> GetWinningFighterBets(int curFightId, int winningFighterId) {
             int stuff = 0;
-            //Some select statement from josh
+            List<Wager> wstuff = await _context.Wagers.FromSqlRaw<Wager>("SELECT * FROM Wager WHERE FightId = {0} AND FighterId = {1}", curFightId, winningFighterId).ToListAsync();
+            foreach (Wager w in wstuff) {
+                stuff += w.Amount;
+            }
             return stuff;
+        }
+        //Get the amount of money to be paid to a user
+        public int GetSinglePayout(int prizePool, int userBet, int totalWinnerBets) {
+            int payout = 0;
+            payout += userBet;
+            double fractionOfWinnings = (double)userBet / (double)totalWinnerBets;
+            payout += (int)(prizePool * fractionOfWinnings);
+            return payout;
+        }
+        public async Task<List<ViewWager>> GetWinningWages(int curFightId, int winningFighterId) {
+            List<Wager> wagers = await _context.Wagers.FromSqlRaw<Wager>("SELECT * FROM Wager WHERE FightId = {0} AND FighterId = {1}", curFightId, winningFighterId).ToListAsync();
+            List<ViewWager> vws = new List<ViewWager>();
+            foreach(Wager w in wagers) {
+                vws.Add(EFToView(w));
+            }
+            return vws;
         }
     }
 }

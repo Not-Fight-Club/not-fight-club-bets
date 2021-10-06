@@ -5,7 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using BetsApi_Data.Models;
+using BetsApi_Data;
+using BetsApi_Models.ViewModels;
+using BetsApi_Business.Interfaces;
+using BetsApi_Models.EFModels;
 
 namespace BetsApi
 {
@@ -13,32 +16,34 @@ namespace BetsApi
     [ApiController]
     public class WagersController : ControllerBase
     {
-        private readonly WageDbContext _context;
+        //private readonly WageDbContext _context;
+        private readonly IWagerRepo _wagerRepo;
 
-        public WagersController(WageDbContext context)
+        public WagersController(IWagerRepo wr)
         {
-            _context = context;
+            _wagerRepo = wr;
         }
 
         // GET: api/Wagers
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Wager>>> GetWagers()
+        public async Task<ActionResult<List<ViewWager>>> GetWagers()
         {
-            return await _context.Wagers.ToListAsync();
+            return await _wagerRepo.WagerListAsnyc();
         }
 
         // GET: api/Wagers/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Wager>> GetWager(int id)
         {
-            var wager = await _context.Wagers.FindAsync(id);
+            /*var wager = await _context.Wagers.FindAsync(id);
 
             if (wager == null)
             {
                 return NotFound();
             }
 
-            return wager;
+            return wager;*/
+            return null;
         }
 
         // PUT: api/Wagers/5
@@ -46,6 +51,7 @@ namespace BetsApi
         [HttpPut("{id}")]
         public async Task<IActionResult> PutWager(int id, Wager wager)
         {
+            /*
             if (id != wager.WagerId)
             {
                 return BadRequest();
@@ -70,6 +76,8 @@ namespace BetsApi
             }
 
             return NoContent();
+            */
+            return null;
         }
 
         // POST: api/Wagers
@@ -77,16 +85,20 @@ namespace BetsApi
         [HttpPost]
         public async Task<ActionResult<Wager>> PostWager(Wager wager)
         {
+            /*
             _context.Wagers.Add(wager);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetWager", new { id = wager.WagerId }, wager);
+            */
+            return null;
         }
 
         // DELETE: api/Wagers/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteWager(int id)
         {
+            /*
             var wager = await _context.Wagers.FindAsync(id);
             if (wager == null)
             {
@@ -97,11 +109,20 @@ namespace BetsApi
             await _context.SaveChangesAsync();
 
             return NoContent();
+            */
+            return null;
         }
 
         private bool WagerExists(int id)
         {
+            /*
             return _context.Wagers.Any(e => e.WagerId == id);
+            */
+            return false;
+        }
+        [HttpGet("{fightid}/{fighterid}")]
+        public async Task<List<ViewUser>> GetPayouts(int fightid, int fighterid) {
+            return await _wagerRepo.ReturnUsersToPayoutsAsnyc(fightid,fighterid);
         }
     }
 }
