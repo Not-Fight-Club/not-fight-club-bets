@@ -1,4 +1,5 @@
 ﻿using System;
+using BetsApi_Models.EFModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 

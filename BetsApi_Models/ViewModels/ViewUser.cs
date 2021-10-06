@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-#nullable disable
-
-namespace BetsApi_Models.EFModels {
-    public partial class User
-    {
+namespace BetsApi_Models.ViewModels {
+    public class ViewUser {
         public Guid UserId { get; set; }
         public int TotalCurrency { get; set; }
     }
