@@ -26,16 +26,6 @@ namespace BetsApi_Business.Repository {
             return vw;
         }
 
-        public Wager ViewToEfModel(ViewWager vw)
-        {
-            Wager w = new Wager();
-            w.UserId = vw.UserId;
-            w.FightId = vw.FightId;
-            w.FighterId = vw.FighterId;
-            w.Amount = vw.Amount;
-            return w;
-        }
-
         public async Task<Wager> ViewToEF(ViewWager view) {
             Wager w = await _context.Wagers.FromSqlRaw<Wager>("SELECT * FROM Wager WHERE UserId = {0} AND FightId = {1} AND FighterId = {2} AND Amount = {3}", view.UserId, view.FightId, view.FighterId, view.Amount).FirstOrDefaultAsync();
             return w;
@@ -119,13 +109,11 @@ namespace BetsApi_Business.Repository {
         }
 
         public async Task<ViewWager> PostWagerAsync(ViewWager vw)
-        //public async Task<string> PostWagerAsync(ViewWager vw)
         {
-            Wager w = ViewToEfModel(vw);
-            int i = await _context.Database.ExecuteSqlRawAsync("INSERT INTO Wager values ({0},{1},{2},{3})", w.UserId, w.FightId, w.Amount, w.FighterId);// default is null
+            int i = await _context.Database.ExecuteSqlRawAsync("INSERT INTO Wager values ({0},{1},{2},{3})", vw.UserId, vw.FightId, vw.Amount,vw.FighterId);// default is null
             
             if (i != 1) return null;
-            Wager newWager =  _context.Wagers.FromSqlRaw<Wager>("SELECT * FROM Wager WHERE UserId={0} AND FightId={1} AND FighterId={2}", w.UserId, w.FightId, w.FighterId).FirstOrDefault();
+            Wager newWager =  _context.Wagers.FromSqlRaw<Wager>("SELECT * FROM Wager WHERE UserId={0} AND FightId={1} AND FighterId={2}", vw.UserId, vw.FightId, vw.FighterId).FirstOrDefault();
             
             return EFToView(newWager);
         }
