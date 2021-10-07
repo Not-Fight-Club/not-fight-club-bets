@@ -14,5 +14,6 @@ namespace BetsApi_Business.Interfaces {
         Task<int> GetWinningFighterBets(int curFightId, int winningFighterId);
         int GetSinglePayout(int prizePool, int userBet, int totalWinnerBets);
         Task<List<ViewWager>> GetWinningWages(int curFightId, int winningFighterId);
+        Task<ViewWager> PostWagerAsync(ViewWager vw);
     }
 }
