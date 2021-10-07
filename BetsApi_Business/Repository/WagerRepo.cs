@@ -49,64 +49,59 @@ namespace BetsApi_Business.Repository {
             return vws;
         }
 
-        public async Task<List<ViewUser>> ReturnUsersToPayoutsAsnyc(int curFightId, int winningFighterId) {
-            //All records for the fight
-            List<ViewWager> allBets = await SpecificWagerListAsnyc(curFightId);
-            //Get the total amount of bets placed on the winner
-            int totalWinningBets = await GetWinningFighterBets(curFightId, winningFighterId);
-            //Get the total amount of bets placed on the loser
-            int totalLosingBets = await GetLosingFighterBets(curFightId, winningFighterId);
-            //Get the winning bets
-            List<ViewWager> winningBets = await GetWinningWages(curFightId, winningFighterId);
-            //Create a list of Users to be paid
+        public async Task<List<ViewUser>> ReturnUsersToPayoutsAsnyc(int curFightId, int winningFighterId)
+        {
+            //List of Winners
+            var winnerBets = (from o in _context.Wagers
+                              where o.FighterId == winningFighterId && o.FightId == curFightId
+                              select new { o.UserId, o.Amount }
+                  ).ToList();
+            //List of Losers
+            var loserBets = (from o in _context.Wagers
+                             where o.FighterId != winningFighterId && o.FightId == curFightId
+                             select new { o.UserId, o.Amount }
+      ).ToList();
+            //Tptal Won and Lost by Winners and Losers
+            double totalWinningBets = winnerBets.Select(c => c.Amount).Sum();
+            double totalLosingBets = loserBets.Select(c => c.Amount).Sum();
+
             List<ViewUser> userToBePaid = new List<ViewUser>();
-            foreach(ViewWager curWage in winningBets) {
-                int curPayout = GetSinglePayout(totalLosingBets,curWage.Amount,totalWinningBets);
+            int payout;
+            double fractionOfWinnings;
+            //Adds a Winning ViewUser to userToBePaid List
+            winnerBets.ForEach(a =>
+            {
                 ViewUser curUser = new ViewUser();
-                curUser.UserId = curWage.UserId;
-                curUser.TotalCurrency = curPayout;
+                curUser.UserId = a.UserId;
+
+                payout = 0;
+                payout += a.Amount;
+                fractionOfWinnings = (double)a.Amount / (double)totalWinningBets;
+                payout += (int)(totalLosingBets * fractionOfWinnings);
+
+                curUser.TotalCurrency = payout;
                 userToBePaid.Add(curUser);
             }
-
-
+             );
             return userToBePaid;
         }
 
-        //Helper Functions
-        //Get money bet on losing fighter
-        public async Task<int> GetLosingFighterBets(int curFightId, int winningFighterId) {
-            int stuff = 0;
-            List<Wager> wstuff = await _context.Wagers.FromSqlRaw<Wager>("SELECT * FROM Wager WHERE FightId = {0} AND FighterId != {1}", curFightId, winningFighterId).ToListAsync();
-            foreach(Wager w in wstuff) {
-                stuff += w.Amount;
-            }
-            return stuff;
+
+
+        public async Task<ViewWager> putWagerAsnyc(ViewWager vw)
+        {
+
+            int c1 = await _context.Database.ExecuteSqlRawAsync("UPDATE Wager SET Amount= {0} WHERE UserId= {1} AND FightId= {2} AND FighterId= {3} ", vw.Amount, vw.UserId, vw.FightId, vw.FighterId);// default is NULL
+
+            if (c1 != 1) return null;
+
+            Wager w1 = await _context.Wagers.FromSqlRaw<Wager>("SELECT * FROM Wager WHERE FightId = {0} AND FighterId = {1} AND UserId = {2}", vw.FightId, vw.FighterId, vw.UserId).FirstOrDefaultAsync();// default is NULL     
+            if (w1.Amount == vw.Amount)
+                return EFToView(w1);
+            else
+                return null;
         }
-        //Get money bet on winning fighter
-        public async Task<int> GetWinningFighterBets(int curFightId, int winningFighterId) {
-            int stuff = 0;
-            List<Wager> wstuff = await _context.Wagers.FromSqlRaw<Wager>("SELECT * FROM Wager WHERE FightId = {0} AND FighterId = {1}", curFightId, winningFighterId).ToListAsync();
-            foreach (Wager w in wstuff) {
-                stuff += w.Amount;
-            }
-            return stuff;
-        }
-        //Get the amount of money to be paid to a user
-        public int GetSinglePayout(int prizePool, int userBet, int totalWinnerBets) {
-            int payout = 0;
-            payout += userBet;
-            double fractionOfWinnings = (double)userBet / (double)totalWinnerBets;
-            payout += (int)(prizePool * fractionOfWinnings);
-            return payout;
-        }
-        public async Task<List<ViewWager>> GetWinningWages(int curFightId, int winningFighterId) {
-            List<Wager> wagers = await _context.Wagers.FromSqlRaw<Wager>("SELECT * FROM Wager WHERE FightId = {0} AND FighterId = {1}", curFightId, winningFighterId).ToListAsync();
-            List<ViewWager> vws = new List<ViewWager>();
-            foreach(Wager w in wagers) {
-                vws.Add(EFToView(w));
-            }
-            return vws;
-        }
+
 
         public async Task<ViewWager> PostWagerAsync(ViewWager vw)
         {
