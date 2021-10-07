@@ -125,18 +125,16 @@ namespace BetsApi
             return await _wagerRepo.ReturnUsersToPayoutsAsnyc(fightid,fighterid);
         }
 
-        [HttpPost("bet")]
+        /// <summary>
+        /// This method post wager info to the Wagers table
+        /// </summary>
+        /// <param name="vw"></param>
+        /// <returns></returns>
+        [HttpPost("postbet")]
         public async Task<ActionResult<ViewWager>> Create(ViewWager vw)
-        //public async Task<string> Create(ViewWager vw)
         {
             if (!ModelState.IsValid) return BadRequest();
 
-            //ViewModelProduct p1 = await _productrepo.PostProductAsync(p);
-            //if (p1 == null)
-            //{
-            //    return NotFound();
-            //}
-            //return Created($"~product/{p1.Id}", p1);
             ViewWager vw1 = await _wagerRepo.PostWagerAsync(vw);
             if (vw1 == null)
             {

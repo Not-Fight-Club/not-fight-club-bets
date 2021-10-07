@@ -125,7 +125,7 @@ namespace BetsApi_Business.Repository {
             int i = await _context.Database.ExecuteSqlRawAsync("INSERT INTO Wager values ({0},{1},{2},{3})", w.UserId, w.FightId, w.Amount, w.FighterId);// default is null
             
             if (i != 1) return null;
-            Wager newWager =  _context.Wagers.FromSqlRaw<Wager>("SELECT * FROM Wager WHERE UserId={0} AND FightId={1} AND FighterId={2}", w.UserId, w.FightId, w.FighterId).FirstOrDefault(); ;
+            Wager newWager =  _context.Wagers.FromSqlRaw<Wager>("SELECT * FROM Wager WHERE UserId={0} AND FightId={1} AND FighterId={2}", w.UserId, w.FightId, w.FighterId).FirstOrDefault();
             
             return EFToView(newWager);
         }
