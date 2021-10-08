@@ -91,17 +91,17 @@ namespace BetsApi_Business.Repository {
         public async Task<List<ViewUser>> ReturnUsersToPayoutsAsnyc(int curFightId, int winningFighterId)
         {
             //List of Winners
-            var winnerBets = (from o in _context.Wagers
+            var winnerBets = await (from o in _context.Wagers
                               where o.FighterId == winningFighterId && o.FightId == curFightId
                               select new { o.UserId, o.Amount }
-                  ).ToList();
+                  ).ToListAsync();
             //List of Losers
-            var loserBets = (from o in _context.Wagers
+            var loserBets = await(from o in _context.Wagers
                              where o.FighterId != winningFighterId && o.FightId == curFightId
                              select new { o.UserId, o.Amount }
-      ).ToList();
+      ).ToListAsync();
             //Tptal Won and Lost by Winners and Losers
-            double totalWinningBets =  winnerBets.Select( c =>  c.Amount).Sum();
+            double totalWinningBets = winnerBets.Select( c =>  c.Amount).Sum();
             double totalLosingBets =  loserBets.Select( c =>  c.Amount).Sum();
             
             List<ViewUser> userToBePaid = new List<ViewUser>();
