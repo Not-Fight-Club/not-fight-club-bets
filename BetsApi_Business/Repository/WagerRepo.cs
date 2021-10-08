@@ -43,31 +43,41 @@ namespace BetsApi_Business.Repository {
         public async Task<List<ViewWager>> SpecificWagerListAsnyc(int curFightId) {
             List<Wager> allWagers = await _context.Wagers.FromSqlRaw<Wager>("SELECT * FROM Wager WHERE FightId = {0}", curFightId).ToListAsync();
             List<ViewWager> vws = new List<ViewWager>();
-            foreach (Wager w in allWagers) {
+            foreach(Wager w in allWagers) {
                 vws.Add(EFToView(w));
             }
             return vws;
         }
 
         public async Task<List<ViewUser>> ReturnUsersToPayoutsAsnyc(int curFightId, int winningFighterId) {
-            //All records for the fight
-            List<ViewWager> allBets = await SpecificWagerListAsnyc(curFightId);
-            //Get the total amount of bets placed on the winner
-            int totalWinningBets = await GetWinningFighterBets(curFightId, winningFighterId);
-            //Get the total amount of bets placed on the loser
-            int totalLosingBets = await GetLosingFighterBets(curFightId, winningFighterId);
-            //Get the winning bets
-            List<ViewWager> winningBets = await GetWinningWages(curFightId, winningFighterId);
-            //Create a list of Users to be paid
-            List<ViewUser> userToBePaid = new List<ViewUser>();
-            foreach(ViewWager curWage in winningBets) {
-                int curPayout = GetSinglePayout(totalLosingBets,curWage.Amount,totalWinningBets);
-                ViewUser curUser = new ViewUser();
-                curUser.UserId = curWage.UserId;
-                curUser.TotalCurrency = curPayout;
-                userToBePaid.Add(curUser);
-            }
 
+            var winnerBets = await (from o in _context.Wagers
+                where o.FighterId == winningFighterId && o.FightId == curFightId
+                select new { o.UserId, o.Amount }
+                ).ToListAsync();
+            var loserBets = await (from o in _context.Wagers
+                where o.FighterId != winningFighterId && o.FightId == curFightId
+                select new { o.UserId, o.Amount }
+                ).ToListAsync();
+
+            double totalWinningBets = winnerBets.Select(c => c.Amount).Sum();
+            double totalLosingBets = loserBets.Select(c => c.Amount).Sum();
+
+            List<ViewUser> userToBePaid = new List<ViewUser>();
+            int payout;
+            double fractionOfWinnings;
+            winnerBets.ForEach(a => {
+                ViewUser curUser = new ViewUser();
+                curUser.UserId = a.UserId;
+
+                payout = 0;
+                payout += a.Amount;
+                fractionOfWinnings = (double)a.Amount / (double)totalWinningBets;
+                payout += (int)(totalLosingBets * fractionOfWinnings);
+
+                curUser.TotalCurrency = payout;
+                userToBePaid.Add(curUser);
+            });
 
             return userToBePaid;
         }
@@ -117,6 +127,5 @@ namespace BetsApi_Business.Repository {
             
             return EFToView(newWager);
         }
-
-    }
-}
+    }//EOC
+}//EON
