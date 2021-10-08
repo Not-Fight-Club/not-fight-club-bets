@@ -27,26 +27,65 @@ namespace BetsApi_Business.Repository {
         }
 
         public async Task<Wager> ViewToEF(ViewWager view) {
-            Wager w = await _context.Wagers.FromSqlRaw<Wager>("SELECT * FROM Wager WHERE UserId = {0} AND FightId = {1} AND FighterId = {2} AND Amount = {3}", view.UserId, view.FightId, view.FighterId, view.Amount).FirstOrDefaultAsync();
-            return w;
+           
+            Wager wm = new Wager();
+
+            var allwagersquery = (from o in _context.Wagers
+                                  where o.UserId == view.UserId && o.FightId == view.FightId && o.FighterId == view.FighterId && o.Amount == view.Amount
+                                  select new { o }
+           ).ToListAsync();
+            foreach (var p in await allwagersquery)
+            {
+                wm.WagerId = p.o.WagerId;
+                wm.UserId = p.o.UserId;
+                wm.Amount = p.o.Amount;
+                wm.FighterId = p.o.FighterId;
+                wm.FightId = p.o.FightId;
+
+            }
+            return wm;
         }
 
         public async Task<List<ViewWager>> WagerListAsnyc() {
-            List<Wager> allWagers = await _context.Wagers.FromSqlRaw<Wager>("SELECT * FROM Wager").ToListAsync();
-            List<ViewWager> vws = new List<ViewWager>();
-            foreach(Wager w in allWagers) {
-                vws.Add(EFToView(w));
+
+            ViewWager vws = new ViewWager();
+            List<ViewWager> vwsl = new List<ViewWager>();
+            var allwagersquery = (from o in _context.Wagers
+                                  select new { o }
+           ).ToListAsync();
+            foreach (var p in await allwagersquery)
+            {
+                vws = new ViewWager();
+                vws.UserId = p.o.UserId;
+                vws.Amount = p.o.Amount;
+                vws.FighterId = p.o.FighterId;
+                vws.FightId = p.o.FightId;
+                vwsl.Add(vws);
             }
-            return vws;
+
+            return vwsl;
+ 
         }
 
         public async Task<List<ViewWager>> SpecificWagerListAsnyc(int curFightId) {
-            List<Wager> allWagers = await _context.Wagers.FromSqlRaw<Wager>("SELECT * FROM Wager WHERE FightId = {0}", curFightId).ToListAsync();
-            List<ViewWager> vws = new List<ViewWager>();
-            foreach (Wager w in allWagers) {
-                vws.Add(EFToView(w));
+            ViewWager vws = new ViewWager();
+            List<ViewWager> vwsl = new List<ViewWager>();
+            var allwagersquery = (from o in _context.Wagers
+                              where  o.FightId == curFightId
+                              select new { o}
+           ).ToListAsync();
+            foreach (var p in await allwagersquery )
+            {
+                vws = new ViewWager();
+                vws.UserId = p.o.UserId;
+                vws.Amount = p.o.Amount;
+                vws.FighterId = p.o.FighterId;
+                vws.FightId = p.o.FightId;
+                vwsl.Add(vws);
+
             }
-            return vws;
+
+            return vwsl;
         }
 
         public async Task<List<ViewUser>> ReturnUsersToPayoutsAsnyc(int curFightId, int winningFighterId)
@@ -62,14 +101,14 @@ namespace BetsApi_Business.Repository {
                              select new { o.UserId, o.Amount }
       ).ToList();
             //Tptal Won and Lost by Winners and Losers
-            double totalWinningBets = winnerBets.Select(c => c.Amount).Sum();
-            double totalLosingBets = loserBets.Select(c => c.Amount).Sum();
-
+            double totalWinningBets =  winnerBets.Select( c =>  c.Amount).Sum();
+            double totalLosingBets =  loserBets.Select( c =>  c.Amount).Sum();
+            
             List<ViewUser> userToBePaid = new List<ViewUser>();
             int payout;
             double fractionOfWinnings;
             //Adds a Winning ViewUser to userToBePaid List
-            winnerBets.ForEach(a =>
+            foreach (var a in winnerBets)
             {
                 ViewUser curUser = new ViewUser();
                 curUser.UserId = a.UserId;
@@ -82,7 +121,7 @@ namespace BetsApi_Business.Repository {
                 curUser.TotalCurrency = payout;
                 userToBePaid.Add(curUser);
             }
-             );
+             
             return userToBePaid;
         }
 
