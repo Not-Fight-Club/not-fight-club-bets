@@ -96,7 +96,7 @@ namespace BetsApi_Test {
             Assert.Equal(vw.UserId, result.UserId);
             Assert.Equal(vw.FightId, result.FightId);
             Assert.Equal(vw.FighterId, result.FighterId);
-            Assert.Equal(vw.Amount, result.Amount,);
+            Assert.Equal(vw.Amount, result.Amount);
         }
         //3. WagerListAsync()
         [Fact]
@@ -116,8 +116,16 @@ namespace BetsApi_Test {
             Assert.Equal(3, results1.Count);
         }
         //5. ReturnUsersToPayoutsAsync(int curFightId, int winningFighterId)
-        //6. GetSinglePayout(int prizePool, int userBet, int totalWinnerBets)
-        //7. PostWagerAsync(ViewWager vw)
-        //8. PutWagerAsync(ViewWager vw)
+        [Theory]
+        [InlineData(10,3)]
+        public async void TestReturnUsersToPayoutsAsync(int fightId, int fighterId) {
+            var winningUsers = await wr.ReturnUsersToPayoutsAsnyc(fightId, fighterId);
+
+            Assert.Equal(162, winningUsers[0].TotalCurrency);
+            Assert.Equal(487, winningUsers[1].TotalCurrency);
+        }
+        
+        //6. PostWagerAsync(ViewWager vw)
+        //7. PutWagerAsync(ViewWager vw)
     }
 }
