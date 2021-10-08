@@ -140,7 +140,7 @@ namespace BetsApi_Business.Repository {
                 Amount = vw.Amount
             };
             
-            _context.Update(wagerToPost).State = EntityState.Added;
+            _context.Add(wagerToPost);
             await _context.SaveChangesAsync();
 
             var newWager = await _context.Wagers.Where(e => e.UserId == wagerToPost.UserId && e.FightId == wagerToPost.FightId && e.FighterId == wagerToPost.FighterId && e.Amount == wagerToPost.Amount).FirstOrDefaultAsync();
