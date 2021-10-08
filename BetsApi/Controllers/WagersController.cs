@@ -48,36 +48,18 @@ namespace BetsApi
 
         // PUT: api/Wagers/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutWager(int id, Wager wager)
+        [HttpPut]
+        public async Task<ActionResult<ViewWager>> PutWager(ViewWager viewwager)
         {
-            /*
-            if (id != wager.WagerId)
+            if (!ModelState.IsValid) return BadRequest();
+
+            ViewWager c1 = await _wagerRepo.putWagerAsnyc(viewwager);
+            if (c1 == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            _context.Entry(wager).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!WagerExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-            */
-            return null;
+            return c1;
         }
 
         // POST: api/Wagers
