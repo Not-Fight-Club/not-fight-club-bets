@@ -68,6 +68,7 @@ namespace BetsApi_Business.Repository {
         }
 
         public async Task<List<ViewWager>> SpecificWagerListAsnyc(int curFightId) {
+
             ViewWager vws = new ViewWager();
             List<ViewWager> vwsl = new List<ViewWager>();
             var allwagersquery = (from o in _context.Wagers
@@ -83,10 +84,12 @@ namespace BetsApi_Business.Repository {
                 vws.FightId = p.o.FightId;
                 vwsl.Add(vws);
 
+
             }
 
             return vwsl;
         }
+
 
         public async Task<List<ViewUser>> ReturnUsersToPayoutsAsnyc(int curFightId, int winningFighterId)
         {
@@ -117,6 +120,7 @@ namespace BetsApi_Business.Repository {
                 payout += a.Amount;
                 fractionOfWinnings = (double)a.Amount / (double)totalWinningBets;
                 payout += (int)(totalLosingBets * fractionOfWinnings);
+
 
                 curUser.TotalCurrency = payout;
                 userToBePaid.Add(curUser);
@@ -151,6 +155,5 @@ namespace BetsApi_Business.Repository {
             
             return EFToView(newWager);
         }
-
-    }
-}
+    }//EOC
+}//EON
