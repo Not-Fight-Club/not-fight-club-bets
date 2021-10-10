@@ -124,8 +124,25 @@ namespace BetsApi_Test {
             Assert.Equal(162, winningUsers[0].TotalCurrency);
             Assert.Equal(487, winningUsers[1].TotalCurrency);
         }
-        
+
         //6. PostWagerAsync(ViewWager vw)
+        [Fact]
+        public async void TestPostWagerAsync()
+        {
+            ViewWager w = new ViewWager()
+            {
+                UserId = new Guid("f814ad2f-a55a-4272-8af1-1bb9190c2021"),
+                FightId = 21,
+                Amount = 121,
+                FighterId = 11
+            };
+            ViewWager wager = await wr.PostWagerAsync(w);
+
+            Assert.Equal(wager.UserId, w.UserId);
+            Assert.Equal(wager.FighterId, w.FighterId);
+            Assert.Equal(wager.FightId, w.FightId);
+            Assert.Equal(wager.Amount, w.Amount);
+        }
         //7. PutWagerAsync(ViewWager vw)
     }
 }
