@@ -16,6 +16,7 @@ namespace BetsApi_Test {
         public static DbContextOptions<WageDbContext> options { get; set; } = new DbContextOptionsBuilder<WageDbContext>()
             .UseInMemoryDatabase(databaseName: "TestDb")
             .Options;
+        
         private WageDbContext _context = new WageDbContext(options);
         private WagerRepo wr;
 
@@ -41,22 +42,31 @@ namespace BetsApi_Test {
                 FighterId = 4
             };
             Wager w4 = new Wager() {
-                UserId = new Guid("f814ad2f-a55a-4272-8af1-1bb9190c1984"),
+                UserId = new Guid("f814ad2f-a55a-4272-8af1-1bb9190c1987"),
                 FightId = 7,
                 Amount = 250,
                 FighterId = 5
             };
             Wager w5 = new Wager() {
-                UserId = new Guid("f814ad2f-a55a-4272-8af1-1bb9190c1985"),
-                FightId = 7,
+                UserId = new Guid("f814ad2f-a55a-4272-8af1-1bb9190c1994"),
+                FightId = 11,
                 Amount = 250,
                 FighterId = 6
             };
+            Wager w6 = new Wager()
+            {
+                UserId = new Guid("f815ad2f-a25a-4272-8af1-1bb9190c1991"),
+                FightId = 8,
+                Amount = 250,
+                FighterId = 12
+            };
+
             _context.Wagers.Add(w1);
             _context.Wagers.Add(w2);
             _context.Wagers.Add(w3);
             _context.Wagers.Add(w4);
             _context.Wagers.Add(w5);
+            _context.Wagers.Add(w6);
             _context.SaveChanges();
             wr = new WagerRepo(_context);
         }
@@ -100,11 +110,12 @@ namespace BetsApi_Test {
         }
         //3. WagerListAsync()
         [Fact]
-        public async void TestWagerListAsync() {
+        public async void TestWagerListAsync()
+        {
             List<ViewWager> results = await wr.WagerListAsnyc();
 
             Assert.True(results is List<ViewWager>);
-            Assert.Equal(5, results.Count);
+            Assert.Equal(6, results.Count);
         }
         //4. SpecificWagerListAsync(int curFightId)
         [Theory]
@@ -144,5 +155,27 @@ namespace BetsApi_Test {
             Assert.Equal(wager.Amount, w.Amount);
         }
         //7. PutWagerAsync(ViewWager vw)
+        [Theory]
+        [InlineData(8, 12)]
+        public async void TestPutWagerAsync(int fightId, int fighterId)
+        {
+            Wager w = await _context.Wagers.Where(e => e.FightId == fightId && e.FighterId == fighterId).FirstOrDefaultAsync();
+
+            ViewWager vw = new ViewWager();
+                vw.UserId = w.UserId;
+                vw.FightId = w.FightId;
+                vw.FighterId = w.FighterId;
+                vw.Amount = 10;
+
+                ViewWager wager = await wr.putWagerAsnyc(vw);
+
+                Assert.Equal(wager.UserId, w.UserId);
+                Assert.Equal(wager.FighterId, w.FighterId);
+                Assert.Equal(wager.FightId, w.FightId);
+                Assert.Equal(wager.Amount, w.Amount);
+                Assert.Equal(10, wager.Amount);
+           
+        }
+
     }
 }
