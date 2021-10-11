@@ -10,9 +10,7 @@ namespace BetsApi_Business.Interfaces {
         Task<List<ViewWager>> WagerListAsnyc();
         Task<List<ViewWager>> SpecificWagerListAsnyc(int curFightId);
         Task<List<ViewUser>> ReturnUsersToPayoutsAsnyc(int curFightId, int winningFighterId);
-        Task<int> GetLosingFighterBets(int curFightId, int winningFighterId);
-        Task<int> GetWinningFighterBets(int curFightId, int winningFighterId);
-        int GetSinglePayout(int prizePool, int userBet, int totalWinnerBets);
-        Task<List<ViewWager>> GetWinningWages(int curFightId, int winningFighterId);
+        Task<ViewWager> PostWagerAsync(ViewWager vw);
+        Task<ViewWager> putWagerAsnyc(ViewWager vw);
     }
 }

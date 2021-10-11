@@ -48,36 +48,18 @@ namespace BetsApi
 
         // PUT: api/Wagers/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutWager(int id, Wager wager)
+        [HttpPut]
+        public async Task<ActionResult<ViewWager>> PutWager(ViewWager viewwager)
         {
-            /*
-            if (id != wager.WagerId)
+            if (!ModelState.IsValid) return BadRequest();
+
+            ViewWager c1 = await _wagerRepo.putWagerAsnyc(viewwager);
+            if (c1 == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            _context.Entry(wager).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!WagerExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-            */
-            return null;
+            return c1;
         }
 
         // POST: api/Wagers
@@ -123,6 +105,24 @@ namespace BetsApi
         [HttpGet("{fightid}/{fighterid}")]
         public async Task<List<ViewUser>> GetPayouts(int fightid, int fighterid) {
             return await _wagerRepo.ReturnUsersToPayoutsAsnyc(fightid,fighterid);
+        }
+
+        /// <summary>
+        /// This method post wager info to the Wagers table
+        /// </summary>
+        /// <param name="vw"></param>
+        /// <returns></returns>
+        [HttpPost("postbet")]
+        public async Task<ActionResult<ViewWager>> Create(ViewWager vw)
+        {
+            if (!ModelState.IsValid) return BadRequest();
+
+            ViewWager vw1 = await _wagerRepo.PostWagerAsync(vw);
+            if (vw1 == null)
+            {
+                return NotFound();
+            }
+            return vw1;
         }
     }
 }
