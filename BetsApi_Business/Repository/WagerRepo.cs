@@ -119,15 +119,14 @@ namespace BetsApi_Business.Repository {
 
         public async Task<ViewWager> putWagerAsnyc(ViewWager vw)
         {
-            var updateWager = await ViewToEF(vw);
-            _context.Update(updateWager);
-            await _context.SaveChangesAsync();
-            
+        
             var updatedWager = await _context.Wagers.Where(e => e.UserId == vw.UserId && e.FightId == vw.FightId && e.FighterId == vw.FighterId).FirstOrDefaultAsync();
-            if (updatedWager.Amount == vw.Amount)
-                return EFToView(updateWager);
-            else
-                return null;
+            updatedWager.Amount = vw.Amount; 
+            _context.Update(updatedWager);
+         
+           await _context.SaveChangesAsync();
+           return vw;
+           
         }
 
 
