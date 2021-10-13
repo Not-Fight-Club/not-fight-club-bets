@@ -3,6 +3,11 @@
 Microservice to handle betting and rewards in NotFightClub
 ## Technologies Used
 - C#
+- XUnit Testing
+- Angular
+- Swagger
+- Entity Framework Core
+- ASP.NET
 ### Implemented Features
 - A bet can be placed on a fight
 - A bet can be updated
