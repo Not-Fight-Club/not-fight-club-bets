@@ -35,5 +35,10 @@ namespace BetsApi.Controllers
             })
             .ToArray();
         }
+    
+        [HttpGet("simple")]
+        public string GetString()
+        {return "working";}
+    
     }
 }
