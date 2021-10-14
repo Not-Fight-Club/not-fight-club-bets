@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Net.Http;
 
 namespace BetsApi.Controllers
 {
@@ -35,10 +36,25 @@ namespace BetsApi.Controllers
             })
             .ToArray();
         }
-    
-        [HttpGet("simple")]
-        public string GetString()
-        {return "working";}
+
+        [HttpGet("FEtoAPI")]
+        public string GetString1() { return "response from bets"; }
+
+
+        static readonly HttpClient client = new HttpClient();
+        
+        [HttpGet("apiToapi")]
+        public async Task<string> GetString()
+        {
+          //calling the character api
+          HttpResponseMessage response = await client.GetAsync("http://52.191.238.224:5005/api/character/testing");
+          response.EnsureSuccessStatusCode();
+          string responseBody = await response.Content.ReadAsStringAsync();
+          return responseBody;
+
+        }
+
+        
     
     }
 }
