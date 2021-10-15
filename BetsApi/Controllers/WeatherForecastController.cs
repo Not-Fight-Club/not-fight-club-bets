@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Net.Http;
+using System.Data.SqlClient;
 
 namespace BetsApi.Controllers
 {
@@ -54,6 +55,19 @@ namespace BetsApi.Controllers
 
         }
 
+        [HttpGet("dbtest")]
+        public string dbTest()
+        {
+            string query = "select Inventory from Product where Id = @productId";
+            using (SqlConnection conn = new SqlConnection("Server=tcp:cafe-sqldb-server.database.windows.net,1433;Initial Catalog=Cafe-sqldb;Persist Security Info=False;User ID=cafe-server-admin;Password=Robo$solo;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"))
+            {
+                SqlCommand cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@productId", "B073DTZ6KZ");
+                conn.Open();
+                int stock = (int)cmd.ExecuteScalar();
+                return stock.ToString();
+            }
+        }
         
     
     }
