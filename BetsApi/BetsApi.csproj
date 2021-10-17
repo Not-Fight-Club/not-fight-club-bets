@@ -2,9 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <ApplicationInsightsResourceId>/subscriptions/4ba1cdd3-e665-4687-b57e-fdcac557a869/resourceGroups/p3_fight_club/providers/microsoft.insights/components/p3_fight_club_applicationinsights</ApplicationInsightsResourceId>
+    <UserSecretsId>26e305aa-2347-4bcd-a22e-daa147e08b57</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.15.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.10">
       <PrivateAssets>all</PrivateAssets>
