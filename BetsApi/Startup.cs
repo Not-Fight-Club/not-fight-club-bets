@@ -53,7 +53,7 @@ namespace BetsApi
             });
             services.AddDbContext<WageDbContext>(options => {
                 if (!options.IsConfigured) {
-                    options.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=WageDb;Trusted_Connection=True;");
+                    options.UseSqlServer(Configuration.GetConnectionString("Default"));
                 }
             });
         }
