@@ -16,38 +16,26 @@ namespace BetsApi
     [ApiController]
     public class WagersController : ControllerBase
     {
-        //private readonly WageDbContext _context;
         private readonly IWagerRepo _wagerRepo;
 
         public WagersController(IWagerRepo wr)
         {
             _wagerRepo = wr;
         }
-
-        // GET: api/Wagers
+        /// <summary>
+        /// Purpose: Get all records from the Wager Table
+        /// </summary>
+        /// <returns>List of ViewWager</returns>
         [HttpGet]
         public async Task<ActionResult<List<ViewWager>>> GetWagers()
         {
             return await _wagerRepo.WagerListAsnyc();
         }
-
-        // GET: api/Wagers/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Wager>> GetWager(int id)
-        {
-            /*var wager = await _context.Wagers.FindAsync(id);
-
-            if (wager == null)
-            {
-                return NotFound();
-            }
-
-            return wager;*/
-            return null;
-        }
-
-        // PUT: api/Wagers/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Purpose: Updates a record in the Wager Table
+        /// </summary>
+        /// <param name="viewwager"></param>
+        /// <returns>ViewWager</returns>
         [HttpPut]
         public async Task<ActionResult<ViewWager>> PutWager(ViewWager viewwager)
         {
@@ -61,57 +49,21 @@ namespace BetsApi
 
             return c1;
         }
-
-        // POST: api/Wagers
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Wager>> PostWager(Wager wager)
-        {
-            /*
-            _context.Wagers.Add(wager);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetWager", new { id = wager.WagerId }, wager);
-            */
-            return null;
-        }
-
-        // DELETE: api/Wagers/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteWager(int id)
-        {
-            /*
-            var wager = await _context.Wagers.FindAsync(id);
-            if (wager == null)
-            {
-                return NotFound();
-            }
-
-            _context.Wagers.Remove(wager);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-            */
-            return null;
-        }
-
-        private bool WagerExists(int id)
-        {
-            /*
-            return _context.Wagers.Any(e => e.WagerId == id);
-            */
-            return false;
-        }
+        /// <summary>
+        /// Purpose: Get a list of users to be paid for a concluded fight
+        /// </summary>
+        /// <param name="fightid"></param>
+        /// <param name="fighterid"></param>
+        /// <returns>List of ViewUser</returns>
         [HttpGet("{fightid}/{fighterid}")]
         public async Task<List<ViewUser>> GetPayouts(int fightid, int fighterid) {
             return await _wagerRepo.ReturnUsersToPayoutsAsnyc(fightid,fighterid);
         }
-
         /// <summary>
         /// This method post wager info to the Wagers table
         /// </summary>
         /// <param name="vw"></param>
-        /// <returns></returns>
+        /// <returns>ViewWager</returns>
         [HttpPost("postbet")]
         public async Task<ActionResult<ViewWager>> Create(ViewWager vw)
         {

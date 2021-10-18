@@ -13,6 +13,9 @@ using Xunit;
 namespace BetsApi_Test {
     public class WagerRepoTest {
 
+        /// <summary>
+        /// Assigning an inMemoryDatabase called TestDb with the WageDbContext as a template
+        /// </summary>
         public static DbContextOptions<WageDbContext> options { get; set; } = new DbContextOptionsBuilder<WageDbContext>()
             .UseInMemoryDatabase(databaseName: "TestDb")
             .Options;
@@ -20,6 +23,9 @@ namespace BetsApi_Test {
         private WageDbContext _context = new WageDbContext(options);
         private WagerRepo wr;
 
+        /// <summary>
+        /// Purpose: This constructor seeds the inMemoryDatabase with records to be tested throughout this file.
+        /// </summary>
         public WagerRepoTest() {
             _context.Database.EnsureDeleted();
             _context.Database.EnsureCreated();
@@ -70,8 +76,9 @@ namespace BetsApi_Test {
             _context.SaveChanges();
             wr = new WagerRepo(_context);
         }
-        //What methods from the WagerRepo do we want to test?
-        //1. EFToView(Wager ef)
+        /// <summary>
+        /// Method being tested: EFToView(Wager ef)
+        /// </summary>
         [Fact]
         public void TestEFWagerToViewWager() {
 
@@ -90,7 +97,9 @@ namespace BetsApi_Test {
             Assert.Equal(sut.FighterId, result.FighterId);
             Assert.Equal(sut.Amount, result.Amount);
         }
-        //2. ViewToEF(ViewWager view)
+        /// <summary>
+        /// Method being tested: ViewToEF(ViewWager view)
+        /// </summary>
         [Fact]
         public async void TestViewWagerToEFWager() {
             ViewWager vw = new ViewWager() {
@@ -108,7 +117,9 @@ namespace BetsApi_Test {
             Assert.Equal(vw.FighterId, result.FighterId);
             Assert.Equal(vw.Amount, result.Amount);
         }
-        //3. WagerListAsync()
+        /// <summary>
+        /// Method being tested: WagerListAsync()
+        /// </summary>
         [Fact]
         public async void TestWagerListAsync()
         {
@@ -117,7 +128,10 @@ namespace BetsApi_Test {
             Assert.True(results is List<ViewWager>);
             Assert.Equal(6, results.Count);
         }
-        //4. SpecificWagerListAsync(int curFightId)
+        /// <summary>
+        /// Method being tested: SpecificWagerListAsync(int curFightId)
+        /// </summary>
+        /// <param name="fight"></param>
         [Theory]
         [InlineData(10)]
         public async void TestSpecificWagerListAsnyc(int fight) {
@@ -126,7 +140,11 @@ namespace BetsApi_Test {
             Assert.True(results1 is List<ViewWager>);
             Assert.Equal(3, results1.Count);
         }
-        //5. ReturnUsersToPayoutsAsync(int curFightId, int winningFighterId)
+        /// <summary>
+        /// Method being tested: ReturnUsersToPayoutsAsync(int curFightId, int winningFighterId)
+        /// </summary>
+        /// <param name="fightId"></param>
+        /// <param name="fighterId"></param>
         [Theory]
         [InlineData(10,3)]
         public async void TestReturnUsersToPayoutsAsync(int fightId, int fighterId) {
@@ -135,8 +153,9 @@ namespace BetsApi_Test {
             Assert.Equal(162, winningUsers[0].TotalCurrency);
             Assert.Equal(487, winningUsers[1].TotalCurrency);
         }
-
-        //6. PostWagerAsync(ViewWager vw)
+        /// <summary>
+        /// Method being tested: PostWagerAsync(ViewWager vw)
+        /// </summary>
         [Fact]
         public async void TestPostWagerAsync()
         {
@@ -154,7 +173,11 @@ namespace BetsApi_Test {
             Assert.Equal(wager.FightId, w.FightId);
             Assert.Equal(wager.Amount, w.Amount);
         }
-        //7. PutWagerAsync(ViewWager vw)
+        /// <summary>
+        /// Method being tested: PutWagerAsync(ViewWager vw)
+        /// </summary>
+        /// <param name="fightId"></param>
+        /// <param name="fighterId"></param>
         [Theory]
         [InlineData(8, 12)]
         public async void TestPutWagerAsync(int fightId, int fighterId)
@@ -173,9 +196,7 @@ namespace BetsApi_Test {
                 Assert.Equal(wager.FighterId, w.FighterId);
                 Assert.Equal(wager.FightId, w.FightId);
                 Assert.Equal(wager.Amount, w.Amount);
-                Assert.Equal(10, wager.Amount);
-           
+                Assert.Equal(10, wager.Amount);          
         }
-
     }
 }
