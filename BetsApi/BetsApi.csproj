@@ -2,8 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <ApplicationInsightsResourceId>/subscriptions/4ba1cdd3-e665-4687-b57e-fdcac557a869/resourceGroups/p3_fight_club/providers/microsoft.insights/components/p3_fight_club_applicationinsights</ApplicationInsightsResourceId>
-    <UserSecretsId>26e305aa-2347-4bcd-a22e-daa147e08b57</UserSecretsId>
+
+    <UserSecretsId>6b3f34af-f48d-416a-a053-c1835a257b3d</UserSecretsId>
+
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,6 +21,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
   </ItemGroup>
 
   <ItemGroup>
