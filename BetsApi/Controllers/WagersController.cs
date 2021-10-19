@@ -67,10 +67,19 @@ namespace BetsApi
         [HttpPost("postbet")]
         public async Task<ActionResult<ViewWager>> Create(ViewWager vw)
         {
+
             if (!ModelState.IsValid) return BadRequest();
 
+            //Remove money from the user account
+            //We have a UserId(guid) amount of money(int)
+            //Call the updateMoneyAPI in user's microservice
+            //some//:Http//Address:port-5000.com/Users/{vw}
+            //if reponse == OK()
+            //Continue with placing the bet
+            //Else return notFound();
+            ViewWager vw2 = await _wagerRepo.putWagerOnCustomer(vw);
             ViewWager vw1 = await _wagerRepo.PostWagerAsync(vw);
-            if (vw1 == null)
+            if (vw1 == null || vw2 == null)
             {
                 return NotFound();
             }

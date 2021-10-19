@@ -9,12 +9,27 @@ using BetsApi_Models;
 using BetsApi_Models.ViewModels;
 using BetsApi_Models.EFModels;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Http;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 namespace BetsApi_Business.Repository {
     public class WagerRepo : IModelMapper<Wager, ViewWager>, IWagerRepo {
 
+        private IHttpClientFactory _clientFactory;
+        private ILogger<WagerRepo> _logger;
+        private IConfiguration _config;
         private readonly WageDbContext _context;
-        public WagerRepo(WageDbContext context) {
+        public WagerRepo(IHttpClientFactory clientFactory, ILogger<WagerRepo> logger, IConfiguration config, WageDbContext context) {
+            _context = context;
+            _clientFactory = clientFactory;
+            _logger = logger;
+            _config = config;
+        }
+
+        public WagerRepo(WageDbContext context)
+        {
             _context = context;
         }
         /// <summary>
@@ -151,6 +166,34 @@ namespace BetsApi_Business.Repository {
            await _context.SaveChangesAsync();
            return vw;          
         }
+
+        public async Task<ViewWager> putWagerOnCustomer(ViewWager vw)
+        {
+            string baseUrl = _config["apiUrl:users"];
+            ViewUser vu = new ViewUser() { UserId = vw.UserId, TotalCurrency = -(vw.Amount)};
+
+            string endpointURI = $"{baseUrl}/UpdateTotal";
+            var jsonBody = JsonConvert.SerializeObject(vu);
+
+            var request = new HttpRequestMessage(HttpMethod.Put, endpointURI);
+            request.Content = new StringContent(jsonBody, System.Text.Encoding.UTF8, "application/json");
+
+            var client = _clientFactory.CreateClient();
+
+            _logger.LogInformation($"base address for client api: {endpointURI}");
+            var response = await client.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError($"Failed request to {endpointURI}: {response}");
+                return null;
+            }
+            else
+            {
+                return vw;
+            }
+        }
+
         /// <summary>
         /// Purpose: Places a wager record into the Wager Table
         /// </summary>

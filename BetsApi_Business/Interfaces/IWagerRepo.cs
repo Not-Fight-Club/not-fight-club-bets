@@ -12,5 +12,7 @@ namespace BetsApi_Business.Interfaces {
         Task<List<ViewUser>> ReturnUsersToPayoutsAsnyc(int curFightId, int winningFighterId);
         Task<ViewWager> PostWagerAsync(ViewWager vw);
         Task<ViewWager> putWagerAsnyc(ViewWager vw);
+
+        Task<ViewWager> putWagerOnCustomer(ViewWager vw);
     }
 }
