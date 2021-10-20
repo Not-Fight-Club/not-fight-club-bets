@@ -63,7 +63,7 @@ namespace BetsApi.Controllers
         {
             
             string query = "select Inventory from Product where Id = @productId";
-            using (SqlConnection conn = new SqlConnection("Server=tcp:cafe-sqldb-server.database.windows.net,1433;Initial Catalog=Cafe-sqldb;Persist Security Info=False;User ID=cafe-server-admin;Password=Robo$solo;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"))
+            using (SqlConnection conn = new SqlConnection(_iConfig.GetConnectionString("test")))
             {
                 SqlCommand cmd = new SqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@productId", "B00Q7JESL0");
