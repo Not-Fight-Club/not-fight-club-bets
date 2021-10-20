@@ -2,9 +2,10 @@ apiVersion: v1
 kind: Service
 metadata:
     annotations:
-        service.beta.kubernetes.io/azure-dns-label-name: bets
+        service.beta.kubernetes.io/notfightclubnotfightclubbets-resource-group: p3_fight_club
     name: notfightclubnotfightclubbets
 spec:
+    loadBalancerIP: 40.114.110.139
     type: LoadBalancer
     ports:
     - port: 5007
